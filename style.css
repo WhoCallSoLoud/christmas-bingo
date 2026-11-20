@@ -34,6 +34,16 @@ button.primary{background:var(--red);border-color:var(--red);color:#fff}
 .cell.free{background:var(--gold);color:#3a2a00;font-weight:700;cursor:default}
 .cell .star{font-size:1.4em;line-height:1}
 .cell.win{outline:3px solid var(--red)}
+.movie-form{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.movie-form label{font-weight:600}
+.movie-form input{font:inherit;padding:10px;border-radius:8px;border:1px solid var(--line);background:var(--cell);color:var(--fg);min-width:0}
+.print-movie{display:none}
+.share-dialog{border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--fg);padding:16px;width:min(92vw,420px);max-height:92vh;overflow:auto}
+.share-dialog::backdrop{background:rgba(0,0,0,.55)}
+.share-dialog h2{margin:0 0 8px;font-size:1.1rem}
+.share-dialog img{margin-top:8px;width:100%;height:auto;border-radius:10px;display:block}
+.share-text{white-space:pre-wrap;word-break:break-word;font:inherit;background:var(--cell);border:1px solid var(--line);border-radius:8px;padding:10px;margin:10px 0;font-size:.85rem}
+.share-actions{margin-bottom:8px;display:flex;flex-wrap:wrap;gap:8px}
 .banner{text-align:center;font-size:1.3rem;font-weight:700;color:var(--red);margin-bottom:8px}
 .hint,.note{color:var(--muted);font-size:.9rem}
 .error{color:var(--red)}
@@ -57,6 +67,9 @@ button.primary{background:var(--red);border-color:var(--red);color:#fff}
   .flakes{color:#1f6b45;letter-spacing:6pt;font-size:12pt}
   .print-title{font-size:30pt;margin:2pt 0 0;color:#b3262d;font-style:italic;letter-spacing:.5pt}
   .print-name{font-size:14pt;margin:2pt 0 .14in;color:#1f6b45;font-weight:700}
+  .print-movie{display:block;margin:-6pt 0 .12in;font-size:12pt;font-style:italic;color:#1f2a24}
+  .print-movie:empty{display:none}
+  .movie-form,.share-dialog{display:none!important}
   .print-footer{margin-top:.14in;color:#1f6b45;font-size:11pt;font-style:italic}
   .grid{gap:4pt;width:100%}
   .cell{aspect-ratio:1;min-height:0;border:1.5pt solid #1f6b45;border-radius:8pt;font-size:11.5pt;line-height:1.2;padding:5pt;color:#1f2a24;

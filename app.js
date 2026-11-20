@@ -3,7 +3,8 @@
   const marksKey = seed => `bingo:marks:${seed}`;
   const $ = id => document.getElementById(id);
   const FREE = 12;
-  let items = [], seed = '', nickname = '', marks = new Set();
+  const movieKey = s => `bingo:movie:${s}`;
+  let items = [], seed = '', nickname = '', marks = new Set(), movie = { title: '', link: '' };
 
   // --- storage helpers (may throw in private mode) ---
   const store = {
@@ -74,8 +75,103 @@
 
   function showCard(){
     $('name-form').hidden = true; $('card-area').hidden = false;
-    writeUrl(); loadMarks(); render();
+    writeUrl(); loadMarks(); loadMovie(); render();
   }
+
+  // --- movie ---
+  function safeLink(raw){
+    raw = (raw || '').trim(); if (!raw) return '';
+    if (!/^[a-z][a-z0-9+.-]*:/i.test(raw)) raw = 'https://' + raw;
+    try { const u = new URL(raw); return /^https?:$/.test(u.protocol) && u.hostname.includes('.') ? u.href : ''; } catch { return ''; }
+  }
+  function loadMovie(){
+    try { movie = JSON.parse(store.get(movieKey(seed)) || '{}') || {}; } catch { movie = {}; }
+    movie.title = String(movie.title || ''); movie.link = String(movie.link || '');
+    $('movie-title').value = movie.title; $('movie-link').value = movie.link;
+    showMovie();
+  }
+  function showMovie(){
+    $('print-movie').textContent = movie.title ? `Watching: ${movie.title}` : '';
+    $('movie-link-error').hidden = !(movie.link.trim() && !safeLink(movie.link));
+  }
+  function saveMovie(){
+    movie = { title: $('movie-title').value.trim(), link: $('movie-link').value.trim() };
+    store.set(movieKey(seed), JSON.stringify(movie)); showMovie();
+  }
+  $('movie-title').addEventListener('input', saveMovie);
+  $('movie-link').addEventListener('input', saveMovie);
+
+  // --- share ---
+  const lineCount = () => LINES.filter(l => l.every(i => i === FREE || marks.has(i))).length;
+  const siteUrl = () => location.origin + location.pathname;
+  function shareText(){
+    const rows = [];
+    for (let r = 0; r < 5; r++){
+      let row = ''; for (let c = 0; c < 5; c++){ const i = r*5+c; row += i === FREE ? '🟨' : marks.has(i) ? '🟩' : '⬜'; }
+      rows.push(row);
+    }
+    const n = marks.size, l = lineCount();
+    let t = `🎄 Christmas Movie Bingo · ${nickname}\n${n}/24 squares · ${l} ${l === 1 ? 'line' : 'lines'}${l ? ' 🎉' : ''}\n\n${rows.join('\n')}`;
+    if (movie.title) t += `\n\n🎬 ${movie.title}`;
+    const link = safeLink(movie.link); if (link) t += `\n${link}`;
+    return t + `\n\nPlay: ${siteUrl()}`;
+  }
+  function roundRect(ctx, x, y, w, h, r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+  function fitText(ctx, text, maxW, start, font){ let s = start; do { ctx.font = font(s); s -= 2; } while (ctx.measureText(text).width > maxW && s > 14); }
+  function drawImage(){
+    const W = 720, pad = 48, gap = 12, cell = (W - pad*2 - gap*4) / 5, gridTop = 210;
+    const H = gridTop + 5*cell + 4*gap + 170;
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const ctx = cv.getContext('2d'); const serif = 'Georgia, "Times New Roman", serif';
+    ctx.fillStyle = '#fffdf7'; ctx.fillRect(0, 0, W, H);
+    ctx.lineWidth = 8; ctx.strokeStyle = '#1f6b45'; roundRect(ctx, 14, 14, W-28, H-28, 28); ctx.stroke();
+    ctx.lineWidth = 3; ctx.strokeStyle = '#b3262d'; roundRect(ctx, 26, 26, W-52, H-52, 22); ctx.stroke();
+    ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = '#b3262d'; ctx.font = `italic 700 52px ${serif}`; ctx.fillText('Christmas Movie Bingo', W/2, 100);
+    ctx.fillStyle = '#1f6b45'; ctx.font = `700 28px ${serif}`;
+    fitText(ctx, nickname, W - 160, 28, s => `700 ${s}px ${serif}`); ctx.fillText(nickname, W/2, 146);
+    const n = marks.size, l = lineCount();
+    ctx.fillStyle = '#5d6b63'; ctx.font = `22px ${serif}`;
+    ctx.fillText(`${n}/24 squares · ${l} ${l === 1 ? 'line' : 'lines'}${l ? ' · BINGO!' : ''}`, W/2, 180);
+    for (let i = 0; i < 25; i++){
+      const x = pad + (i % 5) * (cell + gap), y = gridTop + Math.floor(i / 5) * (cell + gap);
+      roundRect(ctx, x, y, cell, cell, 14);
+      if (i === FREE){ ctx.fillStyle = '#f6dc8f'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = '#b3262d'; ctx.stroke();
+        ctx.fillStyle = '#b3262d'; ctx.font = `${cell*0.5}px ${serif}`; ctx.textBaseline = 'middle'; ctx.fillText('★', x+cell/2, y+cell/2+3); ctx.textBaseline = 'alphabetic'; }
+      else if (marks.has(i)){ ctx.fillStyle = '#3aa56b'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = '#1f6b45'; ctx.stroke(); }
+      else { ctx.fillStyle = '#eef0ea'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#d6cdbd'; ctx.stroke(); }
+    }
+    const by = gridTop + 5*cell + 4*gap + 54;
+    if (movie.title){ ctx.fillStyle = '#1f2a24'; fitText(ctx, '🎬 ' + movie.title, W - 120, 28, s => `700 ${s}px ${serif}`); ctx.fillText('🎬 ' + movie.title, W/2, by); }
+    ctx.fillStyle = '#5d6b63'; ctx.font = `18px ${serif}`;
+    ctx.fillText(siteUrl().replace(/^https?:\/\//, ''), W/2, H - 56);
+    return cv;
+  }
+  let shareBlob = null;
+  const dlg = $('share-dialog');
+  $('share').addEventListener('click', () => {
+    const cv = drawImage(); $('share-img').src = cv.toDataURL('image/png'); $('share-text').textContent = shareText();
+    $('share-status').textContent = ''; shareBlob = null;
+    cv.toBlob(b => { shareBlob = b; }, 'image/png');
+    $('share-native').hidden = !navigator.share;
+    dlg.showModal ? dlg.showModal() : dlg.setAttribute('open', '');
+  });
+  $('share-close').addEventListener('click', () => dlg.close());
+  dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+  $('share-copy').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(shareText()); $('share-status').textContent = 'Copied! Paste it anywhere.'; }
+    catch { const r = document.createRange(); r.selectNodeContents($('share-text')); getSelection().removeAllRanges(); getSelection().addRange(r); $('share-status').textContent = 'Press copy on the selected text.'; }
+  });
+  $('share-download').addEventListener('click', () => {
+    const a = document.createElement('a'); a.href = $('share-img').src; a.download = 'christmas-bingo.png'; a.click();
+  });
+  $('share-native').addEventListener('click', async () => {
+    const data = { title: 'Christmas Movie Bingo', text: shareText() };
+    try {
+      if (shareBlob){ const f = new File([shareBlob], 'christmas-bingo.png', { type: 'image/png' }); if (navigator.canShare && navigator.canShare({ files: [f] })) data.files = [f]; }
+      await navigator.share(data);
+    } catch (e) { if (e.name !== 'AbortError') $('share-status').textContent = 'Sharing isn\'t available here. Use Copy text or Save image.'; }
+  });
 
   // --- events ---
   $('grid').addEventListener('click', e => {
@@ -96,7 +192,7 @@
 
   $('new-card').addEventListener('click', () => {
     if (marks.size && !confirm('Start a new card? Your current marks will be cleared.')) return;
-    store.del(marksKey(seed)); marks.clear();
+    store.del(marksKey(seed)); store.del(movieKey(seed)); marks.clear();
     seed = newSeed(); showCard();
   });
 

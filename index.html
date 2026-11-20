@@ -29,11 +29,19 @@
         <div class="flakes">❄ ✦ ❄ ✦ ❄ ✦ ❄</div>
         <h2 class="print-title">Christmas Movie Bingo</h2>
         <p class="print-name" id="print-name"></p>
+        <p class="print-movie" id="print-movie"></p>
       </div>
       <div class="toolbar no-print">
         <span id="player-label" class="player-label"></span>
         <button id="new-card" type="button">New card</button>
+        <button id="share" type="button">Share my card</button>
         <button id="print" type="button" class="primary">Print / Save as PDF</button>
+      </div>
+      <div class="movie-form no-print">
+        <label for="movie-title">🎬 What are you watching?</label>
+        <input id="movie-title" maxlength="80" placeholder="Movie title" autocomplete="off">
+        <input id="movie-link" type="url" inputmode="url" maxlength="300" placeholder="Letterboxd / IMDb link (optional)" autocomplete="off">
+        <p id="movie-link-error" class="error" hidden>That doesn't look like a web link, so it won't be shared.</p>
       </div>
       <div id="bingo-banner" class="banner no-print" hidden>BINGO! 🎉</div>
       <div id="grid" class="grid" role="grid" aria-label="Bingo card"></div>
@@ -78,6 +86,19 @@
     </table>
   </section>
 </main>
+
+<dialog id="share-dialog" class="share-dialog">
+  <h2>Share my card</h2>
+  <div class="share-actions">
+    <button id="share-native" type="button" class="primary" hidden>Share…</button>
+    <button id="share-copy" type="button">Copy text</button>
+    <button id="share-download" type="button">Save image</button>
+    <button id="share-close" type="button">Close</button>
+  </div>
+  <p id="share-status" class="hint" role="status"></p>
+  <img id="share-img" alt="Your bingo card as a grid of colored squares">
+  <pre id="share-text" class="share-text"></pre>
+</dialog>
 
 <script src="app.js"></script>
 </body>
