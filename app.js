@@ -172,7 +172,7 @@
     const cv = drawImage(detail()); $('share-img').src = cv.toDataURL('image/png'); $('share-text').textContent = shareText(detail());
     shareBlob = null; cv.toBlob(b => { shareBlob = b; }, 'image/png');
   }
-  $('share-detail').addEventListener('change', () => { renderShare(); $('share-status').textContent = ''; });
+  $('share-detail').addEventListener('change', () => { renderShare(); $('share-status').textContent = detail() ? 'Showing square names.' : 'Square names hidden.'; });
   $('share').addEventListener('click', () => {
     $('share-status').textContent = ''; renderShare();
     $('share-native').hidden = !navigator.share;
