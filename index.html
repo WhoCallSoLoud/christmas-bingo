@@ -24,7 +24,12 @@
     </form>
 
     <div id="card-area" hidden>
-      <p class="print-title" id="print-title"></p>
+      <div class="print-header">
+        <div class="stripe"></div>
+        <div class="flakes">❄ ✦ ❄ ✦ ❄ ✦ ❄</div>
+        <h2 class="print-title">Christmas Movie Bingo</h2>
+        <p class="print-name" id="print-name"></p>
+      </div>
       <div class="toolbar no-print">
         <span id="player-label" class="player-label"></span>
         <button id="new-card" type="button">New card</button>
@@ -32,6 +37,7 @@
       </div>
       <div id="bingo-banner" class="banner no-print" hidden>BINGO! 🎉</div>
       <div id="grid" class="grid" role="grid" aria-label="Bingo card"></div>
+      <div class="print-footer">❄ Mark a square when you spot it · Five in a row wins ❄</div>
       <p class="hint no-print">Tap a square when you spot it. This page's URL holds your card, so bookmark it to come back to the same one.</p>
     </div>
     <p id="error" class="error" hidden></p>

@@ -48,12 +48,19 @@
     card.forEach((text, i) => {
       const b = document.createElement('button');
       b.type = 'button'; b.className = 'cell'; b.dataset.i = i;
-      if (text === null){ b.classList.add('free'); b.textContent = 'FREE'; b.setAttribute('aria-pressed', 'true'); b.disabled = true; }
-      else { b.textContent = text; b.setAttribute('aria-pressed', marks.has(i)); }
+      if (text === null){ b.classList.add('free'); b.innerHTML = '<span class="star">★</span><span class="main">FREE</span>'; b.setAttribute('aria-pressed', 'true'); b.disabled = true; }
+      else {
+        const m = text.match(/^(.*?)\s*(\(.*\))$/);
+        const main = document.createElement('span'); main.className = 'main'; main.textContent = m ? m[1] : text;
+        b.appendChild(main);
+        if (m) { const sub = document.createElement('span'); sub.className = 'sub'; sub.textContent = m[2]; b.appendChild(sub); }
+        if (text.length > 44) b.classList.add('xl'); else if (text.length > 28) b.classList.add('long');
+        b.setAttribute('aria-pressed', marks.has(i));
+      }
       grid.appendChild(b);
     });
     $('player-label').textContent = `Card for ${nickname}`;
-    $('print-title').textContent = `Christmas Movie Bingo — ${nickname}`;
+    $('print-name').textContent = `Card for ${nickname}`;
     updateWins();
   }
 
