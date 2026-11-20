@@ -104,7 +104,7 @@
   // --- share ---
   const lineCount = () => LINES.filter(l => l.every(i => i === FREE || marks.has(i))).length;
   const siteUrl = () => location.origin + location.pathname;
-  function shareText(){
+  function shareText(detail = false){
     const rows = [];
     for (let r = 0; r < 5; r++){
       let row = ''; for (let c = 0; c < 5; c++){ const i = r*5+c; row += i === FREE ? '🟨' : marks.has(i) ? '🟩' : '⬜'; }
@@ -112,15 +112,25 @@
     }
     const n = marks.size, l = lineCount();
     let t = `🎄 Christmas Movie Bingo · ${nickname}\n${n}/24 squares · ${l} ${l === 1 ? 'line' : 'lines'}${l ? ' 🎉' : ''}\n\n${rows.join('\n')}`;
+    if (detail){
+      const card = buildCard(seed), got = [...marks].sort((x, y) => x - y).map(i => card[i]).filter(Boolean);
+      t += `\n\n` + (got.length ? got.map(s => `✅ ${s}`).join('\n') : 'Nothing marked yet');
+    }
     if (movie.title) t += `\n\n🎬 ${movie.title}`;
     const link = safeLink(movie.link); if (link) t += `\n${link}`;
     return t + `\n\nPlay: ${siteUrl()}`;
   }
   function roundRect(ctx, x, y, w, h, r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
   function fitText(ctx, text, maxW, start, font){ let s = start; do { ctx.font = font(s); s -= 2; } while (ctx.measureText(text).width > maxW && s > 14); }
-  function drawImage(){
-    const W = 720, pad = 48, gap = 12, cell = (W - pad*2 - gap*4) / 5, gridTop = 210;
+  function wrapLines(ctx, text, maxW){
+    const words = text.split(/\s+/), lines = []; let cur = '';
+    for (const w of words){ const t = cur ? cur + ' ' + w : w; if (cur && ctx.measureText(t).width > maxW){ lines.push(cur); cur = w; } else cur = t; }
+    if (cur) lines.push(cur); return lines;
+  }
+  function drawImage(detail = false){
+    const W = detail ? 960 : 720, pad = 48, gap = detail ? 10 : 12, cell = (W - pad*2 - gap*4) / 5, gridTop = 210;
     const H = gridTop + 5*cell + 4*gap + 170;
+    const card = buildCard(seed);
     const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
     const ctx = cv.getContext('2d'); const serif = 'Georgia, "Times New Roman", serif';
     ctx.fillStyle = '#fffdf7'; ctx.fillRect(0, 0, W, H);
@@ -140,6 +150,14 @@
         ctx.fillStyle = '#b3262d'; ctx.font = `${cell*0.5}px ${serif}`; ctx.textBaseline = 'middle'; ctx.fillText('★', x+cell/2, y+cell/2+3); ctx.textBaseline = 'alphabetic'; }
       else if (marks.has(i)){ ctx.fillStyle = '#3aa56b'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = '#1f6b45'; ctx.stroke(); }
       else { ctx.fillStyle = '#eef0ea'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#d6cdbd'; ctx.stroke(); }
+      if (detail && i !== FREE){
+        const txt = card[i], maxW = cell - 16; let size = 20, lines;
+        for (; size >= 11; size--){ ctx.font = `600 ${size}px ${serif}`; lines = wrapLines(ctx, txt, maxW);
+          if (lines.length * size * 1.18 <= cell - 16 && lines.every(l => ctx.measureText(l).width <= maxW)) break; }
+        ctx.fillStyle = marks.has(i) ? '#fff' : '#5d6b63'; ctx.textBaseline = 'middle';
+        const lh = size * 1.18, y0 = y + cell/2 - (lines.length - 1) * lh / 2;
+        lines.forEach((l, k) => ctx.fillText(l, x + cell/2, y0 + k * lh)); ctx.textBaseline = 'alphabetic';
+      }
     }
     const by = gridTop + 5*cell + 4*gap + 54;
     if (movie.title){ ctx.fillStyle = '#1f2a24'; fitText(ctx, '🎬 ' + movie.title, W - 120, 28, s => `700 ${s}px ${serif}`); ctx.fillText('🎬 ' + movie.title, W/2, by); }
@@ -149,24 +167,28 @@
   }
   let shareBlob = null;
   const dlg = $('share-dialog');
+  const detail = () => $('share-detail').checked;
+  function renderShare(){
+    const cv = drawImage(detail()); $('share-img').src = cv.toDataURL('image/png'); $('share-text').textContent = shareText(detail());
+    shareBlob = null; cv.toBlob(b => { shareBlob = b; }, 'image/png');
+  }
+  $('share-detail').addEventListener('change', () => { renderShare(); $('share-status').textContent = ''; });
   $('share').addEventListener('click', () => {
-    const cv = drawImage(); $('share-img').src = cv.toDataURL('image/png'); $('share-text').textContent = shareText();
-    $('share-status').textContent = ''; shareBlob = null;
-    cv.toBlob(b => { shareBlob = b; }, 'image/png');
+    $('share-status').textContent = ''; renderShare();
     $('share-native').hidden = !navigator.share;
     dlg.showModal ? dlg.showModal() : dlg.setAttribute('open', '');
   });
   $('share-close').addEventListener('click', () => dlg.close());
   dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
   $('share-copy').addEventListener('click', async () => {
-    try { await navigator.clipboard.writeText(shareText()); $('share-status').textContent = 'Copied! Paste it anywhere.'; }
+    try { await navigator.clipboard.writeText(shareText(detail())); $('share-status').textContent = 'Copied! Paste it anywhere.'; }
     catch { const r = document.createRange(); r.selectNodeContents($('share-text')); getSelection().removeAllRanges(); getSelection().addRange(r); $('share-status').textContent = 'Press copy on the selected text.'; }
   });
   $('share-download').addEventListener('click', () => {
-    const a = document.createElement('a'); a.href = $('share-img').src; a.download = 'christmas-bingo.png'; a.click();
+    const a = document.createElement('a'); a.href = $('share-img').src; a.download = detail() ? 'christmas-bingo-squares.png' : 'christmas-bingo.png'; a.click();
   });
   $('share-native').addEventListener('click', async () => {
-    const data = { title: 'Christmas Movie Bingo', text: shareText() };
+    const data = { title: 'Christmas Movie Bingo', text: shareText(detail()) };
     try {
       if (shareBlob){ const f = new File([shareBlob], 'christmas-bingo.png', { type: 'image/png' }); if (navigator.canShare && navigator.canShare({ files: [f] })) data.files = [f]; }
       await navigator.share(data);

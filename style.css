@@ -43,6 +43,8 @@ button.primary{background:var(--red);border-color:var(--red);color:#fff}
 .share-dialog h2{margin:0 0 8px;font-size:1.1rem}
 .share-dialog img{margin-top:8px;width:100%;height:auto;border-radius:10px;display:block}
 .share-text{white-space:pre-wrap;word-break:break-word;font:inherit;background:var(--cell);border:1px solid var(--line);border-radius:8px;padding:10px;margin:10px 0;font-size:.85rem}
+.share-toggle{display:block;margin:6px 0;font-size:.92rem}
+.share-toggle span{color:var(--muted);font-size:.85em}
 .share-actions{margin-bottom:8px;display:flex;flex-wrap:wrap;gap:8px}
 .banner{text-align:center;font-size:1.3rem;font-weight:700;color:var(--red);margin-bottom:8px}
 .hint,.note{color:var(--muted);font-size:.9rem}
