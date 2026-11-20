@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Christmas Movie Bingo</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-header">
+  <h1>🎄 Christmas Movie Bingo</h1>
+  <nav class="tabs" role="tablist">
+    <button role="tab" id="tab-card" aria-controls="panel-card" aria-selected="true">Card</button>
+    <button role="tab" id="tab-rules" aria-controls="panel-rules" aria-selected="false">Drinking rules</button>
+  </nav>
+</header>
+
+<main>
+  <section id="panel-card" role="tabpanel" aria-labelledby="tab-card">
+    <form id="name-form" class="name-form" hidden>
+      <label for="nickname">Your nickname</label>
+      <input id="nickname" name="nickname" maxlength="24" autocomplete="nickname" required>
+      <button type="submit" class="primary">Get my card</button>
+    </form>
+
+    <div id="card-area" hidden>
+      <p class="print-title" id="print-title"></p>
+      <div class="toolbar no-print">
+        <span id="player-label" class="player-label"></span>
+        <button id="new-card" type="button">New card</button>
+        <button id="print" type="button" class="primary">Print / Save as PDF</button>
+      </div>
+      <div id="bingo-banner" class="banner no-print" hidden>BINGO! 🎉</div>
+      <div id="grid" class="grid" role="grid" aria-label="Bingo card"></div>
+      <p class="hint no-print">Tap a square when you spot it. This page's URL holds your card, so bookmark it to come back to the same one.</p>
+    </div>
+    <p id="error" class="error" hidden></p>
+  </section>
+
+  <section id="panel-rules" role="tabpanel" aria-labelledby="tab-rules" hidden class="rules">
+    <h2>Drinking rules</h2>
+    <p class="note">Optional and always 21+. Water, cocoa, or cider counts the same as anything stronger. Pace yourself, don't drive, and nobody has to drink to play.</p>
+
+    <h3>The basics</h3>
+    <ul>
+      <li><strong>Mark a square:</strong> 1 sip.</li>
+      <li><strong>Complete a line</strong> (row, column, or diagonal): give out 3 sips. Say "Bingo!" loudly.</li>
+      <li><strong>Blackout</strong> (every square): finish your drink and pick the next movie.</li>
+      <li><strong>The one kiss:</strong> when the "No kissing until the end" square pays off, everyone drinks.</li>
+    </ul>
+
+    <h3>Bonus sips</h3>
+    <p class="note">These match squares on the card. Pay them when you mark the square.</p>
+    <table>
+      <thead><tr><th>Square</th><th>Bonus</th></tr></thead>
+      <tbody>
+        <tr><td>Stars Alicia Witt, Candace Cameron Bure, Lacey Chabert, or Danica McKellar</td><td>+2 sips. Everyone drinks.</td></tr>
+        <tr><td>Stars a former CW/WB actor · Beloved 70s–90s TV actor in a supporting role</td><td>+1 sip. First person to name the show picks who else drinks.</td></tr>
+        <tr><td>Filmed in Romania</td><td>+2 sips when you spot a castle or mountain that's very much not the movie's town.</td></tr>
+        <tr><td>"Christmas spirit" is invoked</td><td>+1 sip, and +1 more each time it's said again.</td></tr>
+        <tr><td>"I'm not really a Christmas person"</td><td>+2 sips. The speaker is converted by the end, so drink again at the finale.</td></tr>
+        <tr><td>Angel and/or ghost of Christmas appears</td><td>+2 sips. Whisper "spooky".</td></tr>
+        <tr><td>Magic that goes unexplained</td><td>+2 sips. Nobody asks how.</td></tr>
+        <tr><td>Almost-kiss interrupted</td><td>+2 sips. Groan together first.</td></tr>
+        <tr><td>Precocious kid plays matchmaker</td><td>+1 sip per scheme.</td></tr>
+        <tr><td>Product placement</td><td>+1 sip. Name the brand for a second sip.</td></tr>
+        <tr><td>Uses a setup from a Hollywood movie</td><td>+2 sips to whoever names the original first.</td></tr>
+        <tr><td>Big-city woman goes to small town · Switched places</td><td>+1 sip, and +1 if she changes into plaid in the next scene.</td></tr>
+        <tr><td>Someone catches snowflakes on their tongue · Snowball fight</td><td>+1 sip. Do it too if you dare.</td></tr>
+        <tr><td>Villain softens at the finale</td><td>+2 sips. Toast to the redemption arc.</td></tr>
+      </tbody>
+    </table>
+  </section>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
