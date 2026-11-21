@@ -4,6 +4,7 @@
   const $ = id => document.getElementById(id);
   const FREE = 12;
   const movieKey = s => `bingo:movie:${s}`;
+  let room = 'main';
   let items = [], seed = '', nickname = '', marks = new Set(), movie = { title: '', link: '' };
 
   // --- storage helpers (may throw in private mode) ---
@@ -32,8 +33,8 @@
   }
 
   // --- URL ---
-  function readUrl(){ const p = new URLSearchParams(location.search); return { seed: (p.get('seed') || '').replace(/[^a-z0-9]/gi, '').slice(0, 16), name: (p.get('name') || '').slice(0, 24) }; }
-  function writeUrl(){ const p = new URLSearchParams(); p.set('seed', seed); p.set('name', nickname); history.replaceState(null, '', `${location.pathname}?${p}`); }
+  function readUrl(){ const p = new URLSearchParams(location.search); room = (p.get('room') || 'main').replace(/[^a-z0-9_-]/gi, '').toLowerCase().slice(0, 24) || 'main'; return { seed: (p.get('seed') || '').replace(/[^a-z0-9]/gi, '').slice(0, 16), name: (p.get('name') || '').slice(0, 24) }; }
+  function writeUrl(){ const p = new URLSearchParams(); p.set('seed', seed); p.set('name', nickname); if (room !== 'main') p.set('room', room); history.replaceState(null, '', `${location.pathname}?${p}`); }
 
   // --- marks ---
   function loadMarks(){ try { marks = new Set(JSON.parse(store.get(marksKey(seed)) || '[]')); } catch { marks = new Set(); } marks.delete(FREE); }
@@ -220,13 +221,65 @@
 
   $('print').addEventListener('click', () => window.print());
 
+  // --- leaderboard ---
+  const LB = String(window.LEADERBOARD_URL || '').trim();
+  let boardTimer = null;
+  const setBoardStatus = t => { $('board-status').textContent = t; };
+  function renderBoard(rows){
+    rows = rows.slice().sort((a, b) => (b.lines - a.lines) || (b.squares - a.squares) || String(a.first).localeCompare(String(b.first)));
+    const body = $('board-body'); body.textContent = '';
+    rows.forEach((r, i) => {
+      const tr = document.createElement('tr');
+      if (nickname && r.nickname.toLowerCase() === nickname.toLowerCase()) tr.className = 'mine';
+      const add = (txt, cls) => { const td = document.createElement('td'); td.textContent = txt; if (cls) td.className = cls; tr.appendChild(td); return td; };
+      add(i + 1, 'num'); add(r.nickname + (r.lines ? ' 🎉' : '')); add(`${r.squares}/24`, 'num'); add(r.lines, 'num');
+      const mt = add(''); const link = safeLink(r.link);
+      if (r.movie && link){ const a = document.createElement('a'); a.href = link; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = r.movie; mt.appendChild(a); }
+      else mt.textContent = r.movie || '';
+      body.appendChild(tr);
+    });
+    return rows.length;
+  }
+  async function loadBoard(){
+    if (!LB) return;
+    setBoardStatus('Loading…');
+    try {
+      const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 12000);
+      const res = await fetch(`${LB}${LB.includes('?') ? '&' : '?'}room=${encodeURIComponent(room)}`, { signal: ctl.signal }); clearTimeout(t);
+      const data = await res.json(); if (!data.ok) throw new Error('bad response');
+      const n = renderBoard(data.rows || []); setBoardStatus(n ? '' : 'No scores yet. Be the first to post!');
+      return data.rows;
+    } catch (err) { setBoardStatus("Couldn't load the leaderboard. Check your connection and tap Refresh."); }
+  }
+  async function postScore(){
+    if (!seed || !nickname){ setBoardStatus('Get your card first, then post your score.'); return; }
+    setBoardStatus('Posting…'); $('board-post').disabled = true;
+    try {
+      await fetch(LB, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ id: seed, room, nickname, marks: [...marks], movie: movie.title, link: safeLink(movie.link) }) });
+      await new Promise(r => setTimeout(r, 1500));
+      const rows = await loadBoard();
+      const mine = (rows || []).some(r => r.nickname.toLowerCase() === nickname.toLowerCase() && r.squares === marks.size);
+      if (rows) setBoardStatus(mine ? 'Posted! You\'re on the board.' : 'Sent, but your score isn\'t showing yet. Tap Refresh in a moment.');
+    } catch (err) { setBoardStatus("Couldn't post your score. Check your connection and try again."); }
+    $('board-post').disabled = false;
+  }
+  function openBoard(){
+    $('board-room').textContent = room === 'main' ? '' : `Room: ${room}`;
+    $('board-setup').hidden = !!LB; $('board-post').disabled = !LB; $('board-refresh').disabled = !LB;
+    loadBoard(); clearInterval(boardTimer); if (LB) boardTimer = setInterval(loadBoard, 30000);
+  }
+  $('board-post').addEventListener('click', postScore);
+  $('board-refresh').addEventListener('click', loadBoard);
+
   // tabs
-  const tabs = { card: [$('tab-card'), $('panel-card')], rules: [$('tab-rules'), $('panel-rules')] };
+  const tabs = { card: [$('tab-card'), $('panel-card')], board: [$('tab-board'), $('panel-board')] };
   function selectTab(name){
     for (const [k, [t, p]] of Object.entries(tabs)){ t.setAttribute('aria-selected', k === name); p.hidden = k !== name; }
+    if (name === 'board') openBoard(); else clearInterval(boardTimer);
   }
   $('tab-card').onclick = () => selectTab('card');
-  $('tab-rules').onclick = () => selectTab('rules');
+  $('tab-board').onclick = () => selectTab('board');
 
   // --- init ---
   fetch('bingo-items.json').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(data => {
