@@ -274,12 +274,13 @@
   $('board-refresh').addEventListener('click', loadBoard);
 
   // tabs
-  const tabs = { card: [$('tab-card'), $('panel-card')], board: [$('tab-board'), $('panel-board')] };
+  const tabs = { card: [$('tab-card'), $('panel-card')], rules: [$('tab-rules'), $('panel-rules')], board: [$('tab-board'), $('panel-board')] };
   function selectTab(name){
     for (const [k, [t, p]] of Object.entries(tabs)){ t.setAttribute('aria-selected', k === name); p.hidden = k !== name; }
     if (name === 'board') openBoard(); else clearInterval(boardTimer);
   }
   $('tab-card').onclick = () => selectTab('card');
+  $('tab-rules').onclick = () => selectTab('rules');
   $('tab-board').onclick = () => selectTab('board');
 
   // --- init ---

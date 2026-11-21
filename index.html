@@ -4,13 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Christmas Movie Bingo</title>
-<link rel="stylesheet" href="style.css?v=8">
+<link rel="stylesheet" href="style.css?v=9">
 </head>
 <body>
 <header class="site-header">
   <h1>🎄 Christmas Movie Bingo</h1>
   <nav class="tabs" role="tablist">
     <button role="tab" id="tab-card" aria-controls="panel-card" aria-selected="true">Card</button>
+    <button role="tab" id="tab-rules" aria-controls="panel-rules" aria-selected="false">Drinking rules</button>
     <button role="tab" id="tab-board" aria-controls="panel-board" aria-selected="false">Leaderboard</button>
   </nav>
 </header>
@@ -53,6 +54,22 @@
     <p id="error" class="error" hidden></p>
   </section>
 
+  <section id="panel-rules" role="tabpanel" aria-labelledby="tab-rules" hidden class="rules">
+    <h2>The rule</h2>
+    <ul>
+      <li>Mark a square on your card = take a sip. A sip is any drink: cocoa, cider, wine, or sparkling water all count.</li>
+    </ul>
+
+    <h2>Three big rules</h2>
+    <ol>
+      <li>The first on-screen kiss: everybody drinks.</li>
+      <li>"Christmas spirit" or "the magic of Christmas": everybody drinks.</li>
+      <li>BINGO: type BINGO in the chat and the whole group toasts the winner.</li>
+    </ol>
+
+    <p class="rules-footer">Pace yourself, hydrate, and don't drive.</p>
+  </section>
+
   <section id="panel-board" role="tabpanel" aria-labelledby="tab-board" hidden class="board">
     <h2>Leaderboard</h2>
     <p id="board-room" class="note"></p>
@@ -86,7 +103,7 @@
   <pre id="share-text" class="share-text"></pre>
 </dialog>
 
-<script src="config.js?v=8"></script>
-<script src="app.js?v=8"></script>
+<script src="config.js?v=9"></script>
+<script src="app.js?v=9"></script>
 </body>
 </html>

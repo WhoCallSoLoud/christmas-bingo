@@ -38,6 +38,10 @@ button.primary{background:var(--red);border-color:var(--red);color:#fff}
 .movie-form label{font-weight:600}
 .movie-form input{font:inherit;padding:10px;border-radius:8px;border:1px solid var(--line);background:var(--cell);color:var(--fg);min-width:0}
 .print-movie{display:none}
+.rules h2{font-size:1.2rem;margin:1.2em 0 .4em}
+.rules h2:first-child{margin-top:.4em}
+.rules li{margin:.4em 0}
+.rules-footer{margin-top:2em;color:var(--muted);font-size:.85rem}
 .board-actions{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
 .table-wrap{overflow-x:auto}
 .board tr.mine td{background:var(--marked);font-weight:600}
@@ -63,7 +67,7 @@ button.primary{background:var(--red);border-color:var(--red);color:#fff}
   @page{size:letter portrait;margin:.4in}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   body{background:#fff;color:#1f2a24}
-  .site-header,.no-print,.hint,#panel-board,.name-form,.error{display:none!important}
+  .site-header,.no-print,.hint,#panel-rules,#panel-board,.name-form,.error{display:none!important}
   main{padding:0;max-width:none}
   #panel-card{display:block!important}
   #card-area{border:4pt solid #1f6b45;outline:2pt solid #b3262d;outline-offset:3pt;margin:5pt;border-radius:14pt;padding:.22in .25in .18in;
