@@ -29,8 +29,8 @@ button.primary{background:var(--red);border-color:var(--red);color:#fff}
 .cell.long{font-size:clamp(.58rem,2.7vw,.84rem)}
 .cell.xl{font-size:clamp(.54rem,2.45vw,.78rem)}
 .cell .sub{display:block;font-size:.82em;opacity:.8;margin-top:2px}
-.cell[aria-pressed="true"]{background:var(--marked);border-color:var(--green);font-weight:600}
-.cell[aria-pressed="true"]::after{content:"✓";position:absolute;top:1px;right:4px;color:var(--green);font-size:.9em}
+.cell[aria-pressed="true"],.cell.on{background:var(--marked);border-color:var(--green);font-weight:600}
+.cell[aria-pressed="true"]::after,.cell.on::after{content:"✓";position:absolute;top:1px;right:4px;color:var(--green);font-size:.9em}
 .cell.free{background:var(--gold);color:#3a2a00;font-weight:700;cursor:default}
 .cell .star{font-size:1.4em;line-height:1}
 .cell.win{outline:3px solid var(--red)}
@@ -42,11 +42,17 @@ button.primary{background:var(--red);border-color:var(--red);color:#fff}
 .rules h2:first-child{margin-top:.4em}
 .rules li{margin:.4em 0}
 .rules-footer{margin-top:2em;color:var(--muted);font-size:.85rem}
+.thumb{display:inline-grid;grid-template-columns:repeat(5,9px);gap:2px;padding:3px;border-radius:5px;background:#fffdf7;border:1px solid var(--line);vertical-align:middle}
+.thumb i{display:block;width:9px;height:9px;border-radius:2px;background:#dfe3dc}
+.thumb i.on{background:#3aa56b}.thumb i.free{background:#f6dc8f}
+.thumbcell a{display:inline-block;padding:4px;border-radius:8px}
+.thumbcell a:hover,.thumbcell a:focus-visible{background:var(--marked)}
+.view-meta{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
 .board-actions{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
 .table-wrap{overflow-x:auto}
 .board tr.mine td{background:var(--marked);font-weight:600}
 .board td.num,.board th.num{text-align:center}
-.board a{color:var(--red)}
+a{color:var(--red)}
 .share-dialog{border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--fg);padding:16px;width:min(92vw,420px);max-height:92vh;overflow:auto}
 .share-dialog::backdrop{background:rgba(0,0,0,.55)}
 .share-dialog h2{margin:0 0 8px;font-size:1.1rem}
@@ -89,8 +95,8 @@ button.primary{background:var(--red);border-color:var(--red);color:#fff}
   .cell:nth-child(odd){background:#fdecec}
   .cell:nth-child(even){background:#eaf5ee}
   .cell .sub{font-size:8.5pt}
-  .cell[aria-pressed="true"]{font-weight:400}
-  .cell[aria-pressed="true"]::after{color:#b3262d;font-size:12pt;top:1pt;right:4pt}
+  .cell[aria-pressed="true"],.cell.on{font-weight:400}
+  .cell[aria-pressed="true"]::after,.cell.on::after{color:#b3262d;font-size:12pt;top:1pt;right:4pt}
   .cell.free{background:#f6dc8f!important;border-color:#b3262d;border-width:2pt;color:#7a1c21;font-weight:700;font-size:14pt}
   .cell.free::after{display:none!important}
   .cell .star{font-size:26pt;color:#b3262d}

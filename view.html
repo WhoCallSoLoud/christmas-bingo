@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bingo card · Christmas Movie Bingo</title>
+<link rel="stylesheet" href="style.css?v=10">
+</head>
+<body>
+<header class="site-header"><h1>🎄 Christmas Movie Bingo</h1></header>
+<main>
+  <p id="view-status" class="hint" role="status">Loading card…</p>
+  <div id="view" hidden>
+    <h2 id="view-title"></h2>
+    <div class="view-meta">
+      <span id="view-score" class="note"></span>
+      <span id="view-movie"></span>
+    </div>
+    <div id="view-grid" class="grid" role="list" aria-label="Bingo card"></div>
+    <p class="hint">Green squares have been spotted. <a href="./">Play your own card</a></p>
+  </div>
+</main>
+<script src="config.js?v=10"></script>
+<script src="shared.js?v=10"></script>
+<script src="view.js?v=10"></script>
+</body>
+</html>

@@ -14,6 +14,9 @@ A static site (plain HTML/CSS/JS, no build step). Host it with GitHub Pages.
 
 The script creates a `Scores` tab in the sheet the first time someone posts. Open the sheet any time to see or delete rows.
 
+### Updating the script
+`Code.gs` now also stores each player's card and marked squares (columns `card`, `marks`, `pid`), which powers the card thumbnails and `view.html`. Older rows without those columns still work and simply show no thumbnail until that player posts again.
+
 If you change `Code.gs` later, use **Deploy → Manage deployments → Edit → New version** so the same URL keeps working.
 
 ### Rooms

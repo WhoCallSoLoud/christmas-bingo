@@ -3,6 +3,7 @@
   const marksKey = seed => `bingo:marks:${seed}`;
   const $ = id => document.getElementById(id);
   const FREE = 12;
+  const { safeLink, fillCell, thumb } = window.Bingo;
   const movieKey = s => `bingo:movie:${s}`;
   let room = 'main';
   let items = [], seed = '', nickname = '', marks = new Set(), movie = { title: '', link: '' };
@@ -52,11 +53,7 @@
       b.type = 'button'; b.className = 'cell'; b.dataset.i = i;
       if (text === null){ b.classList.add('free'); b.innerHTML = '<span class="star">★</span><span class="main">FREE</span>'; b.setAttribute('aria-pressed', 'true'); b.disabled = true; }
       else {
-        const m = text.match(/^(.*?)\s*(\(.*\))$/);
-        const main = document.createElement('span'); main.className = 'main'; main.textContent = m ? m[1] : text;
-        b.appendChild(main);
-        if (m) { const sub = document.createElement('span'); sub.className = 'sub'; sub.textContent = m[2]; b.appendChild(sub); }
-        if (text.length > 44) b.classList.add('xl'); else if (text.length > 28) b.classList.add('long');
+        fillCell(b, text);
         b.setAttribute('aria-pressed', marks.has(i));
       }
       grid.appendChild(b);
@@ -80,11 +77,6 @@
   }
 
   // --- movie ---
-  function safeLink(raw){
-    raw = (raw || '').trim(); if (!raw) return '';
-    if (!/^[a-z][a-z0-9+.-]*:/i.test(raw)) raw = 'https://' + raw;
-    try { const u = new URL(raw); return /^https?:$/.test(u.protocol) && u.hostname.includes('.') ? u.href : ''; } catch { return ''; }
-  }
   function loadMovie(){
     try { movie = JSON.parse(store.get(movieKey(seed)) || '{}') || {}; } catch { movie = {}; }
     movie.title = String(movie.title || ''); movie.link = String(movie.link || '');
@@ -232,7 +224,13 @@
       const tr = document.createElement('tr');
       if (nickname && r.nickname.toLowerCase() === nickname.toLowerCase()) tr.className = 'mine';
       const add = (txt, cls) => { const td = document.createElement('td'); td.textContent = txt; if (cls) td.className = cls; tr.appendChild(td); return td; };
-      add(i + 1, 'num'); add(r.nickname + (r.lines ? ' 🎉' : '')); add(`${r.squares}/24`, 'num'); add(r.lines, 'num');
+      add(i + 1, 'num'); add(r.nickname + (r.lines ? ' 🎉' : ''));
+      const ct = add('', 'thumbcell');
+      if (r.pid && typeof r.marks === 'string' && r.marks.length === 25){
+        const a = document.createElement('a'); a.href = `view.html?room=${encodeURIComponent(room)}&p=${encodeURIComponent(r.pid)}`;
+        a.target = '_blank'; a.rel = 'noopener'; a.title = `See ${r.nickname}'s card`; a.setAttribute('aria-label', `See ${r.nickname}'s full card`);
+        a.appendChild(thumb(r.marks)); ct.appendChild(a);
+      } add(`${r.squares}/24`, 'num'); add(r.lines, 'num');
       const mt = add(''); const link = safeLink(r.link);
       if (r.movie && link){ const a = document.createElement('a'); a.href = link; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = r.movie; mt.appendChild(a); }
       else mt.textContent = r.movie || '';
@@ -256,7 +254,7 @@
     setBoardStatus('Posting…'); $('post-score').disabled = true;
     try {
       await fetch(LB, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ id: seed, room, nickname, marks: [...marks], movie: movie.title, link: safeLink(movie.link) }) });
+        body: JSON.stringify({ id: seed, room, nickname, marks: [...marks], card: buildCard(seed).map(t => t || ''), movie: movie.title, link: safeLink(movie.link) }) });
       await new Promise(r => setTimeout(r, 1500));
       const rows = await loadBoard();
       const mine = (rows || []).some(r => r.nickname.toLowerCase() === nickname.toLowerCase() && r.squares === marks.size);

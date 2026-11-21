@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Christmas Movie Bingo</title>
-<link rel="stylesheet" href="style.css?v=9">
+<link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
 <header class="site-header">
@@ -81,11 +81,11 @@
     <p id="board-status" class="hint" role="status"></p>
     <div class="table-wrap">
       <table id="board-table">
-        <thead><tr><th>#</th><th>Player</th><th>Squares</th><th>Lines</th><th>Movie</th></tr></thead>
+        <thead><tr><th>#</th><th>Player</th><th>Card</th><th>Squares</th><th>Lines</th><th>Movie</th></tr></thead>
         <tbody id="board-body"></tbody>
       </table>
     </div>
-    <p class="note">Posting shares your nickname, score, and movie with everyone who opens this page. Post again any time to update your score.</p>
+    <p class="note">Posting shares your nickname, score, and movie with everyone who opens this page. Tap a card to see everyone's full squares. Post again any time to update your score.</p>
   </section>
 </main>
 
@@ -103,7 +103,8 @@
   <pre id="share-text" class="share-text"></pre>
 </dialog>
 
-<script src="config.js?v=9"></script>
-<script src="app.js?v=9"></script>
+<script src="config.js?v=10"></script>
+<script src="shared.js?v=10"></script>
+<script src="app.js?v=10"></script>
 </body>
 </html>
