@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Christmas Movie Bingo</title>
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
 <header class="site-header">
@@ -35,8 +35,10 @@
         <span id="player-label" class="player-label"></span>
         <button id="new-card" type="button">New card</button>
         <button id="share" type="button">Share my card</button>
+        <button id="post-score" type="button" hidden>Post my score</button>
         <button id="print" type="button" class="primary">Print / Save as PDF</button>
       </div>
+      <p id="post-status" class="hint no-print" role="status"></p>
       <div class="movie-form no-print">
         <label for="movie-title">🎬 What are you watching?</label>
         <input id="movie-title" maxlength="80" placeholder="Movie title" autocomplete="off">
@@ -55,8 +57,8 @@
     <h2>Leaderboard</h2>
     <p id="board-room" class="note"></p>
     <p id="board-setup" class="note" hidden>The leaderboard isn't set up yet, so scores can't be posted or shown.</p>
+    <p class="note">To add your score, tap <strong>Post my score</strong> on the Card tab.</p>
     <div class="board-actions">
-      <button id="board-post" type="button" class="primary">Post my score</button>
       <button id="board-refresh" type="button">Refresh</button>
     </div>
     <p id="board-status" class="hint" role="status"></p>
@@ -84,7 +86,7 @@
   <pre id="share-text" class="share-text"></pre>
 </dialog>
 
-<script src="config.js?v=7"></script>
-<script src="app.js?v=7"></script>
+<script src="config.js?v=8"></script>
+<script src="app.js?v=8"></script>
 </body>
 </html>

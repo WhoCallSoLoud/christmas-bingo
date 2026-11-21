@@ -224,7 +224,7 @@
   // --- leaderboard ---
   const LB = String(window.LEADERBOARD_URL || '').trim();
   let boardTimer = null;
-  const setBoardStatus = t => { $('board-status').textContent = t; };
+  const setBoardStatus = t => { $('board-status').textContent = t; $('post-status').textContent = t; };
   function renderBoard(rows){
     rows = rows.slice().sort((a, b) => (b.lines - a.lines) || (b.squares - a.squares) || String(a.first).localeCompare(String(b.first)));
     const body = $('board-body'); body.textContent = '';
@@ -253,7 +253,7 @@
   }
   async function postScore(){
     if (!seed || !nickname){ setBoardStatus('Get your card first, then post your score.'); return; }
-    setBoardStatus('Posting…'); $('board-post').disabled = true;
+    setBoardStatus('Posting…'); $('post-score').disabled = true;
     try {
       await fetch(LB, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ id: seed, room, nickname, marks: [...marks], movie: movie.title, link: safeLink(movie.link) }) });
@@ -262,14 +262,15 @@
       const mine = (rows || []).some(r => r.nickname.toLowerCase() === nickname.toLowerCase() && r.squares === marks.size);
       if (rows) setBoardStatus(mine ? 'Posted! You\'re on the board.' : 'Sent, but your score isn\'t showing yet. Tap Refresh in a moment.');
     } catch (err) { setBoardStatus("Couldn't post your score. Check your connection and try again."); }
-    $('board-post').disabled = false;
+    $('post-score').disabled = false;
   }
   function openBoard(){
     $('board-room').textContent = room === 'main' ? '' : `Room: ${room}`;
-    $('board-setup').hidden = !!LB; $('board-post').disabled = !LB; $('board-refresh').disabled = !LB;
+    $('board-setup').hidden = !!LB; $('board-refresh').disabled = !LB;
     loadBoard(); clearInterval(boardTimer); if (LB) boardTimer = setInterval(loadBoard, 30000);
   }
-  $('board-post').addEventListener('click', postScore);
+  $('post-score').hidden = !LB;
+  $('post-score').addEventListener('click', postScore);
   $('board-refresh').addEventListener('click', loadBoard);
 
   // tabs
