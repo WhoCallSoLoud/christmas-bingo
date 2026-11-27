@@ -3,12 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10291d">
+<link rel="preload" href="fonts/fraunces-latin-900-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/atkinson-hyperlegible-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <title>Christmas Movie Bingo</title>
-<link rel="stylesheet" href="style.css?v=10">
+<link rel="stylesheet" href="style.css?v=12">
 </head>
 <body>
 <header class="site-header">
-  <h1>🎄 Christmas Movie Bingo</h1>
+  <h1><span class="kicker">✦ A holiday-movie watch-along ✦</span>Christmas Movie <em>Bingo</em></h1>
   <nav class="tabs" role="tablist">
     <button role="tab" id="tab-card" aria-controls="panel-card" aria-selected="true">Card</button>
     <button role="tab" id="tab-rules" aria-controls="panel-rules" aria-selected="false">Drinking rules</button>
@@ -19,6 +22,8 @@
 <main>
   <section id="panel-card" role="tabpanel" aria-labelledby="tab-card">
     <form id="name-form" class="name-form" hidden>
+      <h2>Grab your card</h2>
+      <p class="note">Pick a nickname and we'll deal you a one-of-a-kind card.</p>
       <label for="nickname">Your nickname</label>
       <input id="nickname" name="nickname" maxlength="24" autocomplete="nickname" required>
       <button type="submit" class="primary">Get my card</button>
@@ -103,8 +108,8 @@
   <pre id="share-text" class="share-text"></pre>
 </dialog>
 
-<script src="config.js?v=10"></script>
-<script src="shared.js?v=10"></script>
-<script src="app.js?v=10"></script>
+<script src="config.js?v=12"></script>
+<script src="shared.js?v=12"></script>
+<script src="app.js?v=12"></script>
 </body>
 </html>

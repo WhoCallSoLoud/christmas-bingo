@@ -24,3 +24,6 @@ Add `?room=name` to the site URL (letters, numbers, `-`, `_`) to give a group it
 
 ### Limits
 There are no logins, so the board runs on trust. The script recomputes lines from the squares sent, caps field lengths, ignores bad links, and never exposes card ids, but anyone could still post a made-up set of squares. Delete rows in the sheet to clean up.
+
+## Fonts
+Headings use Fraunces and body text uses Atkinson Hyperlegible, both self-hosted in `fonts/` under the SIL Open Font License (license files included).

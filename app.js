@@ -125,16 +125,16 @@
     const H = gridTop + 5*cell + 4*gap + 170;
     const card = buildCard(seed);
     const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
-    const ctx = cv.getContext('2d'); const serif = 'Georgia, "Times New Roman", serif';
+    const ctx = cv.getContext('2d'); const serif = '"Fraunces", Georgia, serif', sans = '"Atkinson Hyperlegible", system-ui, sans-serif';
     ctx.fillStyle = '#fffdf7'; ctx.fillRect(0, 0, W, H);
     ctx.lineWidth = 8; ctx.strokeStyle = '#1f6b45'; roundRect(ctx, 14, 14, W-28, H-28, 28); ctx.stroke();
     ctx.lineWidth = 3; ctx.strokeStyle = '#b3262d'; roundRect(ctx, 26, 26, W-52, H-52, 22); ctx.stroke();
     ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
-    ctx.fillStyle = '#b3262d'; ctx.font = `italic 700 52px ${serif}`; ctx.fillText('Christmas Movie Bingo', W/2, 100);
+    ctx.fillStyle = '#b3262d'; ctx.font = `italic 800 52px ${serif}`; ctx.fillText('Christmas Movie Bingo', W/2, 100);
     ctx.fillStyle = '#1f6b45'; ctx.font = `700 28px ${serif}`;
     fitText(ctx, nickname, W - 160, 28, s => `700 ${s}px ${serif}`); ctx.fillText(nickname, W/2, 146);
     const n = marks.size, l = lineCount();
-    ctx.fillStyle = '#5d6b63'; ctx.font = `22px ${serif}`;
+    ctx.fillStyle = '#5d6b63'; ctx.font = `22px ${sans}`;
     ctx.fillText(`${n}/24 squares · ${l} ${l === 1 ? 'line' : 'lines'}${l ? ' · BINGO!' : ''}`, W/2, 180);
     for (let i = 0; i < 25; i++){
       const x = pad + (i % 5) * (cell + gap), y = gridTop + Math.floor(i / 5) * (cell + gap);
@@ -145,7 +145,7 @@
       else { ctx.fillStyle = '#eef0ea'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#d6cdbd'; ctx.stroke(); }
       if (detail && i !== FREE){
         const txt = card[i], maxW = cell - 16; let size = 20, lines;
-        for (; size >= 11; size--){ ctx.font = `600 ${size}px ${serif}`; lines = wrapLines(ctx, txt, maxW);
+        for (; size >= 11; size--){ ctx.font = `700 ${size}px ${sans}`; lines = wrapLines(ctx, txt, maxW);
           if (lines.length * size * 1.18 <= cell - 16 && lines.every(l => ctx.measureText(l).width <= maxW)) break; }
         ctx.fillStyle = marks.has(i) ? '#fff' : '#5d6b63'; ctx.textBaseline = 'middle';
         const lh = size * 1.18, y0 = y + cell/2 - (lines.length - 1) * lh / 2;
@@ -154,7 +154,7 @@
     }
     const by = gridTop + 5*cell + 4*gap + 54;
     if (movie.title){ ctx.fillStyle = '#1f2a24'; fitText(ctx, '🎬 ' + movie.title, W - 120, 28, s => `700 ${s}px ${serif}`); ctx.fillText('🎬 ' + movie.title, W/2, by); }
-    ctx.fillStyle = '#5d6b63'; ctx.font = `18px ${serif}`;
+    ctx.fillStyle = '#5d6b63'; ctx.font = `18px ${sans}`;
     ctx.fillText(siteUrl().replace(/^https?:\/\//, ''), W/2, H - 56);
     return cv;
   }
@@ -166,8 +166,10 @@
     shareBlob = null; cv.toBlob(b => { shareBlob = b; }, 'image/png');
   }
   $('share-detail').addEventListener('change', () => { renderShare(); $('share-status').textContent = detail() ? 'Showing square names.' : 'Square names hidden.'; });
-  $('share').addEventListener('click', () => {
-    $('share-status').textContent = ''; renderShare();
+  $('share').addEventListener('click', async () => {
+    $('share-status').textContent = '';
+    try { await Promise.all(['italic 800 52px Fraunces', '700 28px Fraunces', '700 20px "Atkinson Hyperlegible"', '400 20px "Atkinson Hyperlegible"'].map(f => document.fonts.load(f))); } catch {}
+    renderShare();
     $('share-native').hidden = !navigator.share;
     dlg.showModal ? dlg.showModal() : dlg.setAttribute('open', '');
   });
@@ -194,6 +196,7 @@
     const i = +c.dataset.i;
     marks.has(i) ? marks.delete(i) : marks.add(i);
     c.setAttribute('aria-pressed', marks.has(i));
+    c.classList.remove('pop'); if (marks.has(i)){ void c.offsetWidth; c.classList.add('pop'); }
     saveMarks(); updateWins();
   });
 
@@ -224,7 +227,7 @@
       const tr = document.createElement('tr');
       if (nickname && r.nickname.toLowerCase() === nickname.toLowerCase()) tr.className = 'mine';
       const add = (txt, cls) => { const td = document.createElement('td'); td.textContent = txt; if (cls) td.className = cls; tr.appendChild(td); return td; };
-      add(i + 1, 'num'); add(r.nickname + (r.lines ? ' 🎉' : ''));
+      add(i + 1, 'num rank' + (i < 3 ? ' r' + (i + 1) : '')); add(r.nickname + (r.lines ? ' 🎉' : ''));
       const ct = add('', 'thumbcell');
       if (r.pid && typeof r.marks === 'string' && r.marks.length === 25){
         const a = document.createElement('a'); a.href = `view.html?room=${encodeURIComponent(room)}&p=${encodeURIComponent(r.pid)}`;
